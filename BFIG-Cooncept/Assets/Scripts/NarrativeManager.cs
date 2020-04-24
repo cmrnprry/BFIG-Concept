@@ -6,8 +6,11 @@ using TMPro;
 using Ink;
 using Ink.Runtime;
 
-public class Narrative : MonoBehaviour
+public class NarrativeManager : MonoBehaviour
 {
+    //Class getter and static instance
+    private static NarrativeManager managerInstance;
+    public static NarrativeManager Instance { get { return managerInstance; } }
 
     // Set this file to your compiled json asset
     public TextAsset inkAsset;
@@ -27,18 +30,36 @@ public class Narrative : MonoBehaviour
     [SerializeField] GameObject showChoices;
     [SerializeField] GameObject showTalkingText;
     [SerializeField] GameObject showSpeakerTag;
+    [SerializeField] GameObject showErrorEmotion;
 
     [Header("Choices")]
     [SerializeField] Transform choiceParent;
     [SerializeField] Button choicePrefab;
 
+    [Header("Ink Variables")]
+    public int emotion;
+
 
     void Awake()
     {
+        if (managerInstance != null && managerInstance != this)
+        {
+            Debug.Log("Multiple stats managers!");
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            Debug.Log("Initializing Stats Manager!");
+            managerInstance = this;
+            Debug.Log("Stat Manager Loaded!");
+
+        }
+
         //Set the story
         _inkStory = new Story(inkAsset.text);
 
-        //Get the tags
+        //Set the emotion
+        emotion = -1;
 
 
         //Make sure the right thing is displaying
@@ -83,7 +104,7 @@ public class Narrative : MonoBehaviour
                         speakerTag.text = tags[0].Substring(9);
                         showSpeakerTag.SetActive(true);
                     }
-                    
+
                 }
             }
 
@@ -139,18 +160,33 @@ public class Narrative : MonoBehaviour
     void OnClickChoiceButton(Choice choice)
     {
         Debug.Log("Clicked");
-        _inkStory.ChooseChoiceIndex(choice.index);
+        _inkStory.variablesState["emotion"] = emotion;
 
-        //Turn the correct panels on
-        //Display the choices
-        showTalkingText.SetActive(true);
-        showChoices.SetActive(false);
+        //if the player has chosen an emotion
+        if (emotion != -1)
+        {
+            _inkStory.ChooseChoiceIndex(choice.index);
 
-        //Destroy the buttons
-        DestroyButtons();
+            //Turn the correct panels on
+            //Display the choices
+            showTalkingText.SetActive(true);
+            showChoices.SetActive(false);
 
-        //restart the dislogue
-        StartCoroutine(Display());
+            //Destroy the buttons
+            DestroyButtons();
+
+            //Rest the emotion
+            emotion = -1;
+
+            //restart the dislogue
+            StartCoroutine(Display());
+        }
+        else
+        {
+            StartCoroutine(ErrorPickEmotion());
+        }
+
+
     }
 
     void DestroyButtons()
@@ -171,6 +207,17 @@ public class Narrative : MonoBehaviour
         {
             yield return null;
         }
+
+    }
+
+    //Display the error that the player hasn't chosen an emotion
+    IEnumerator ErrorPickEmotion()
+    {
+        showErrorEmotion.SetActive(true);
+
+        yield return new WaitForSecondsRealtime(1.5f);
+
+        showErrorEmotion.SetActive(false);
 
     }
 }

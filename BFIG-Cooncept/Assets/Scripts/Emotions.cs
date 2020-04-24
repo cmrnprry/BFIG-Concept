@@ -43,4 +43,11 @@ public class Emotions : MonoBehaviour
         curr.sprite = emotionList[currentEmmotion];
 
     }
+
+    public void ChooseEmotion()
+    {
+
+        NarrativeManager.Instance.emotion = currentEmmotion;
+
+    }
 }

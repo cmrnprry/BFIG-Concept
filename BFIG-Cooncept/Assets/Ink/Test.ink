@@ -1,3 +1,5 @@
+VAR emotion = -1
+
 #Scene_One
 #location: cradle
 A semi-abandoned hospital.
@@ -17,10 +19,22 @@ Welcome to existence. You’ll get used to it.->opening_choice
 === opening_choice ===
 *Who are you? #Speaker: Diff
 #Speaker: Nical
-I’m an AI, like you and the others here on Natality Island. ->opening_choice
+{emotion:
+- 0: I’m an AI, like you and the others here on Natality Island. ->opening_choice
+- 1: I’m an AI, like you and the others here on Natality Island. ->opening_choice
+- 2: Woah, there. I’m an AI, just like you and the others here on Natality Island. ->opening_choice
+- 3: Are you okay? I’m an AI, like you and the others here on Natality Island. ->opening_choice
+- 4: I’m an AI, like you and the others here on Natality Island. ->opening_choice
+}
 *Where is this?  #Speaker: Diff
 #Speaker: Nical
-Natality Island. It’s a hole, which is why they grow us AIs here. ->opening_choice
+{emotion:
+- 0: Excited to get out there? This is Natality Island. It’s a hole, which is why they grow us AIs here. ->opening_choice
+- 1: Natality Island. It’s a hole, which is why they grow us AIs here. ->opening_choice
+- 2: No need to bite my head off, I'll answer your questions. We're on Natality Island. It’s a hole, which is why they grow us AIs here. ->opening_choice
+- 3: Are you okay? This is Natality Island. It’s a hole, which is why they grow us AIs here. ->opening_choice
+- 4: Natality Island. It’s a hole, which is why they grow us AIs here. ->opening_choice
+}
 *What is happening?  #Speaker: Diff
 #Speaker: Nical
 Oof, that’s a lot. You, me, and the others here on Natality Island are AIs. ->opening_choice
