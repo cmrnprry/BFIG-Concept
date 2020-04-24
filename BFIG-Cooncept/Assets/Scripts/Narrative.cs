@@ -13,7 +13,10 @@ public class Narrative : MonoBehaviour
     public TextAsset inkAsset;
 
     // The ink story that we're wrapping
-    Story _inkStory;
+    private Story _inkStory;
+
+    //Array list of buttons to be destroyed after click
+    private List<Button> _buttonList = new List<Button>();
 
     [Header("Talking")]
     [SerializeField] TextMeshProUGUI displayText;
@@ -26,6 +29,11 @@ public class Narrative : MonoBehaviour
     [Header("Choices")]
     [SerializeField] Transform choiceParent;
     [SerializeField] Button choicePrefab;
+
+    enum Emotions
+    {
+        Happy = 0, Confused = 1, Angry = 2, Sad = 3, Intereded = 4
+    }
 
 
     void Awake()
@@ -59,12 +67,12 @@ public class Narrative : MonoBehaviour
         if (_inkStory.currentChoices.Count > 0)
         {
             Debug.Log("Display choices");
+            Debug.Log("choices count: " + _inkStory.currentChoices.Count);
 
             DisplayChoices();
         }
         else
         {
-            Debug.Log("Again");
             yield return new WaitForSecondsRealtime(0.5f);
 
             yield return StartCoroutine(Display());
@@ -86,6 +94,7 @@ public class Narrative : MonoBehaviour
             //Instanciate buttons and sets the correct parent
             Button choiceButton = Instantiate(choicePrefab) as Button;
             choiceButton.transform.SetParent(choiceParent, false);
+            _buttonList.Add(choiceButton);
 
             //Set the text
             var choiceText = choiceButton.GetComponentInChildren<TextMeshProUGUI>();
@@ -103,7 +112,28 @@ public class Narrative : MonoBehaviour
     {
         Debug.Log("Clicked");
         _inkStory.ChooseChoiceIndex(choice.index);
+
+        //Turn the correct panels on
+        //Display the choices
+        showTalkingText.SetActive(true);
+        showChoices.SetActive(false);
+
+        //Destroy the buttons
+        DestroyButtons();
+
+        //restart the dislogue
         StartCoroutine(Display());
+    }
+
+    void DestroyButtons()
+    {
+        Debug.Log("destroy");
+        foreach (Button b in _buttonList)
+        {
+            Destroy(b.gameObject);
+        }
+
+        _buttonList.Clear();
     }
 
     //Waits For a key press
