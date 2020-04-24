@@ -20,29 +20,31 @@ public class Narrative : MonoBehaviour
 
     [Header("Talking")]
     [SerializeField] TextMeshProUGUI displayText;
+    [SerializeField] TextMeshProUGUI speakerTag;
 
 
     [Header("Objects to Show and Hide")]
     [SerializeField] GameObject showChoices;
     [SerializeField] GameObject showTalkingText;
+    [SerializeField] GameObject showSpeakerTag;
 
     [Header("Choices")]
     [SerializeField] Transform choiceParent;
     [SerializeField] Button choicePrefab;
 
-    enum Emotions
-    {
-        Happy = 0, Confused = 1, Angry = 2, Sad = 3, Intereded = 4
-    }
-
 
     void Awake()
     {
+        //Set the story
         _inkStory = new Story(inkAsset.text);
+
+        //Get the tags
+
 
         //Make sure the right thing is displaying
         showTalkingText.SetActive(true);
         showChoices.SetActive(false);
+        showSpeakerTag.SetActive(false);
 
         //Start the text
         StartCoroutine(Display());
@@ -54,10 +56,36 @@ public class Narrative : MonoBehaviour
         //Empty current text
         displayText.text = "";
 
+        //Turn off the Speaker Tag
+        showSpeakerTag.SetActive(false);
+
         //Fill current text with next line
         if (_inkStory.canContinue)
         {
             displayText.text = _inkStory.Continue();
+
+            // Get the current tags (if any)
+            List<string> tags = _inkStory.currentTags;
+            Debug.Log("tags: " + tags.Count);
+
+            //Check the tags
+            if (_inkStory.currentTags.Count > 0)
+            {
+                Debug.Log("tags: " + tags[0]);
+                if (tags[0].Length >= 9 && tags[0].Substring(0, 8) == "Speaker:")
+                {
+                    if (tags[0].Substring(9) == "None")
+                    {
+                        showSpeakerTag.SetActive(false);
+                    }
+                    else
+                    {
+                        speakerTag.text = tags[0].Substring(9);
+                        showSpeakerTag.SetActive(true);
+                    }
+                    
+                }
+            }
 
             yield return StartCoroutine(WaitFor("ContinueDialogue"));
         }
