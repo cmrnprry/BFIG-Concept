@@ -33,8 +33,14 @@ public class NarrativeManager : MonoBehaviour
     [SerializeField] GameObject showErrorEmotion;
 
     [Header("Choices")]
-    [SerializeField] Transform choiceParent;
     [SerializeField] Button choicePrefab;
+
+    [Header("Choices Position")]
+    [SerializeField] Transform choiceParent;
+    [SerializeField] Transform pos1;
+    [SerializeField] Transform pos2;
+    [SerializeField] Transform pos3;
+    [SerializeField] Transform pos4;
 
     [Header("Ink Variables")]
     public int emotion;
@@ -136,13 +142,14 @@ public class NarrativeManager : MonoBehaviour
         showTalkingText.SetActive(false);
         showChoices.SetActive(true);
 
-
+        int index = 1;
         Debug.Log("Need to make a choice");
         foreach (Choice choice in _inkStory.currentChoices)
         {
             //Instanciate buttons and sets the correct parent
             Button choiceButton = Instantiate(choicePrefab) as Button;
             choiceButton.transform.SetParent(choiceParent, false);
+            SetChoicePosition(choiceButton, index);
             _buttonList.Add(choiceButton);
 
             //Set the text
@@ -153,6 +160,8 @@ public class NarrativeManager : MonoBehaviour
             choiceButton.onClick.AddListener(delegate {
                 OnClickChoiceButton(choice);
             });
+
+            index++;
         }
     }
 
@@ -187,6 +196,27 @@ public class NarrativeManager : MonoBehaviour
         }
 
 
+    }
+
+    //Set the button position
+    void SetChoicePosition(Button b, int index)
+    {
+        switch (index)
+        {
+            case 1:
+                b.transform.position = pos1.position;
+                break;
+            case 2:
+                b.transform.position = pos2.position;
+                break;
+            case 3:
+                b.transform.position = pos3.position;
+                break;
+            case 4:
+                b.transform.position = pos4.position;
+                break;
+
+        }
     }
 
     void DestroyButtons()
